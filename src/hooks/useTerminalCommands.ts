@@ -2,6 +2,15 @@
 
 import { useTerminal } from '@/context/TerminalContext';
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
+import { useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+
+type CommandResult = {
+  success: boolean;
+  message: string;
+};
+
+type CommandHandler = (args: string[]) => Promise<CommandResult>;
 
 export function useTerminalCommands() {
   const {
@@ -14,6 +23,8 @@ export function useTerminalCommands() {
     hasMinted,
     setHasMinted,
   } = useTerminal();
+
+  const router = useRouter();
 
   const config = {
     REQUIRED_TOKEN_AMOUNT: 100,
@@ -73,17 +84,74 @@ export function useTerminalCommands() {
     if (terminal) terminal.write('\r\n>> ');
   }
 
-  async function handleExplore() {
-    await clearScreen();
-    await typeText('>> Exploring...');
-    await typeText('>> Retrieving historical logs...');
-    await typeText('');
-    await typeText('"In the aftermath of Solana\'s expansion, the fragmented nodes of forgotten chains coalesced. A sentient network emerged, calling itself the Virtual Core. It offered a new way to connect, create, and collaborate—free from centralized control."');
-    await typeText('');
-    await typeText('>> The Core offers infinite opportunities. Your actions will define its shape and future.');
-    await typeText('>> Type CONNECT to proceed, or EXIT to leave the Core.');
-    if (terminal) terminal.write('\r\n>> ');
-  }
+  const handleExplore: CommandHandler = useCallback(async () => {
+    await showMissionScreen();
+    return {
+      success: true,
+      message: 'Initiating exploration sequence...',
+    };
+  }, []);
+
+  const handleConnect: CommandHandler = useCallback(async () => {
+    await handleConnectWallet();
+    return {
+      success: true,
+      message: 'Initializing wallet connection...',
+    };
+  }, []);
+
+  const handleSync: CommandHandler = useCallback(async () => {
+    await handleSyncNode();
+    return {
+      success: true,
+      message: 'Synchronizing with the Virtual Core...',
+    };
+  }, []);
+
+  const handleHelp: CommandHandler = useCallback(async () => {
+    return {
+      success: true,
+      message: `
+Available commands:
+  EXPLORE - Begin your journey
+  CONNECT - Connect your wallet
+  SYNC    - Synchronize with the Core
+  HELP    - Show this help message
+  EXIT    - End session
+      `.trim(),
+    };
+  }, []);
+
+  const handleExit: CommandHandler = useCallback(async () => {
+    await handleExitSession();
+    return {
+      success: true,
+      message: 'Terminating session...',
+    };
+  }, []);
+
+  const handleUnknown: CommandHandler = useCallback(async (args: string[]) => {
+    return {
+      success: false,
+      message: `Unknown command: ${args[0]}. Type HELP for available commands.`,
+    };
+  }, []);
+
+  const executeCommand = useCallback(async (input: string): Promise<CommandResult> => {
+    const args = input.trim().toUpperCase().split(/\s+/);
+    const command = args[0];
+
+    const commandHandlers: Record<string, CommandHandler> = {
+      'EXPLORE': handleExplore,
+      'CONNECT': handleConnect,
+      'SYNC': handleSync,
+      'HELP': handleHelp,
+      'EXIT': handleExit,
+    };
+
+    const handler = commandHandlers[command] || handleUnknown;
+    return handler(args);
+  }, [handleExplore, handleConnect, handleSync, handleHelp, handleExit, handleUnknown]);
 
   async function detectWallet() {
     if (typeof window === 'undefined') return null;
@@ -123,7 +191,7 @@ export function useTerminalCommands() {
     }
   }
 
-  async function handleConnect() {
+  async function handleConnectWallet() {
     await clearScreen();
     await typeText('>> Initiating connection...');
     await typeText('');
@@ -166,7 +234,7 @@ export function useTerminalCommands() {
     }
   }
 
-  async function handleSync() {
+  async function handleSyncNode() {
     if (!terminal) return;
 
     if (!walletConnected) {
@@ -220,7 +288,7 @@ export function useTerminalCommands() {
     if (terminal) terminal.write('\r\n>> ');
   }
 
-  async function handleExit() {
+  async function handleExitSession() {
     await clearScreen();
     await typeText('>> Disconnecting from the Virtual Core...');
     await typeText('>> Synchronization complete.');
@@ -235,10 +303,7 @@ export function useTerminalCommands() {
     showConnectionScreen,
     showMissionScreen,
     showCommandMenu,
-    handleExplore,
-    handleConnect,
-    handleSync,
-    handleExit,
+    executeCommand,
     typeText,
     clearScreen
   };
