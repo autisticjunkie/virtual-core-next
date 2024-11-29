@@ -1,101 +1,77 @@
-import Image from "next/image";
+'use client';
+
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [displayText, setDisplayText] = useState('');
+  const fullText = 'The Virtual Core is a digital construct that emerged from the decentralized web—a source of infinite energy, creativity, and freedom. Users interact with the Core to harness its power for innovation, wealth, and exploration.';
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  useEffect(() => {
+    let currentIndex = 0;
+    const textInterval = setInterval(() => {
+      if (currentIndex <= fullText.length) {
+        setDisplayText(fullText.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        clearInterval(textInterval);
+      }
+    }, 50);
+
+    return () => clearInterval(textInterval);
+  }, []);
+
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 bg-black text-[#00ff00]">
+      <div className="w-full max-w-5xl flex flex-col items-center justify-center gap-8 sm:gap-16">
+        {/* Globe Animation */}
+        <div className="w-full relative flex items-center justify-center">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] object-contain"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+            <source
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/animation.gif-gKcPuKylSI8hoBGQXO9MwQigb4sV7G.mp4"
+              type="video/mp4"
             />
-            Deploy now
-          </a>
+          </video>
+        </div>
+
+        {/* Animated Description */}
+        <div className="text-center max-w-3xl px-4 space-y-4 font-mono min-h-[120px] sm:min-h-[100px]">
+          <p className="text-sm sm:text-base md:text-lg leading-relaxed cursor-default">
+            {displayText}
+            <span className="animate-blink">_</span>
+          </p>
+        </div>
+
+        {/* Navigation Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 font-mono w-full sm:w-auto px-4">
           <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            href="https://twitter.com"
             target="_blank"
             rel="noopener noreferrer"
+            className="w-full sm:w-auto text-center px-6 sm:px-8 py-3 border border-[#00ff00] hover:bg-[#00ff00]/10 transition-colors text-sm sm:text-base"
           >
-            Read our docs
+            TWITTER
           </a>
+          <Link
+            href="/join"
+            className="w-full sm:w-auto text-center px-6 sm:px-8 py-3 border border-[#00ff00] hover:bg-[#00ff00]/10 transition-colors text-sm sm:text-base"
+          >
+            JOIN US
+          </Link>
+          <Link
+            href="/terminal"
+            className="w-full sm:w-auto text-center px-6 sm:px-8 py-3 border border-[#00ff00] hover:bg-[#00ff00]/10 transition-colors text-sm sm:text-base"
+          >
+            TERMINAL
+          </Link>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+    </main>
   );
 }
