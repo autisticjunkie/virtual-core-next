@@ -5,10 +5,10 @@ import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
 import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
-type CommandResult = {
+interface CommandResult {
   success: boolean;
   message: string;
-};
+}
 
 type CommandHandler = (args: string[]) => Promise<CommandResult>;
 
@@ -86,27 +86,30 @@ export function useTerminalCommands() {
 
   const handleExplore: CommandHandler = useCallback(async () => {
     await showMissionScreen();
+    router.push('/explore');
     return {
       success: true,
       message: 'Initiating exploration sequence...',
     };
-  }, []);
+  }, [router]);
 
   const handleConnect: CommandHandler = useCallback(async () => {
     await handleConnectWallet();
+    router.push('/connect');
     return {
       success: true,
       message: 'Initializing wallet connection...',
     };
-  }, []);
+  }, [router]);
 
   const handleSync: CommandHandler = useCallback(async () => {
     await handleSyncNode();
+    router.push('/sync');
     return {
       success: true,
       message: 'Synchronizing with the Virtual Core...',
     };
-  }, []);
+  }, [router]);
 
   const handleHelp: CommandHandler = useCallback(async () => {
     return {
@@ -124,11 +127,12 @@ Available commands:
 
   const handleExit: CommandHandler = useCallback(async () => {
     await handleExitSession();
+    router.push('/');
     return {
       success: true,
       message: 'Terminating session...',
     };
-  }, []);
+  }, [router]);
 
   const handleUnknown: CommandHandler = useCallback(async (args: string[]) => {
     return {
